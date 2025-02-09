@@ -140,7 +140,7 @@ pipeline {
             steps {
                 script {
                     imageValidation().call()
-                    dockerDeploy('dev', '5761', '8761').call()
+                    dockerDeploy('dev', '5232', '8232').call()
                 }
  
             }
@@ -156,7 +156,7 @@ pipeline {
             steps {
                 script {
                     imageValidation().call()
-                    dockerDeploy('tst', '6761', '8761').call()
+                    dockerDeploy('tst', '6232', '8232').call()
                 }
             }
         }
@@ -178,7 +178,7 @@ pipeline {
             steps {
                 script {
                     imageValidation().call()
-                    dockerDeploy('stg', '7761', '8761').call()
+                    dockerDeploy('stg', '7232', '8232').call()
                 }
             }
         }
@@ -206,7 +206,7 @@ pipeline {
                 }
 
                 script {
-                    dockerDeploy('prd', '8761', '8761').call()
+                    dockerDeploy('prd', '8232', '8232').call()
                 }
             }
         }
@@ -282,8 +282,8 @@ def dockerDeploy(envDeploy, hostPort, contPort){
 
 
 // For eureka lets use the below port numbers
-// Container port will be 8761 only, only host port changes
-// dev: HostPort = 5761
-// tst: HostPort = 6761
-// stg: HostPort = 7761
-// prod: HostPort = 8761
+// Container port will be 8232 only, only host port changes
+// dev: HostPort = 5232
+// tst: HostPort = 6232
+// stg: HostPort = 7232
+// prod: HostPort = 8232
