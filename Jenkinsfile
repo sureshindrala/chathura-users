@@ -70,7 +70,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'sonar_creds', variable: 'sonar_creds')]) {
                     sh """
                         mvn sonar:sonar \
-                          -Dsonar.projectKey=i27-eureka \
+                          -Dsonar.projectKey=chathura-user \
                           -Dsonar.host.url=$SONAR_HOST \
                           -Dsonar.login=$sonar_creds
                     """

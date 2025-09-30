@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.learner</groupId>
-    <artifactId>i27-user</artifactId>
+    <artifactId>chathura-user</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>i27-user</name>
+    <name>chathura-user</name>
     <description>A microservice for User management</description>
     <properties>
         <java.version>17</java.version>
