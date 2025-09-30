@@ -177,7 +177,7 @@ pipeline {
 
             }
             steps {
-                timeout(time: 300, unit: 'SECONDS') { // SECONDS, MINUTES, HOURS
+                timeout(time: 300, unit: 'SECONDS') { // SECONDS, MINUTES, HOURS//
                     input message: "Deploying ${env.APPLICATION_NAME} to production ??", 
                         ok: 'Yes', 
                         submitter: 'suresh'
