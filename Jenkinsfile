@@ -121,7 +121,7 @@ pipeline {
             steps {
                 script {
                     imageValidation().call()
-                    dockerdeploy('dev','3323').call()
+                    dockerdeploy('dev','5232').call()
                 }
             }
         }
@@ -136,7 +136,7 @@ pipeline {
             steps {
                 script {
                     imageValidation().call()
-                    dockerdeploy('test','4332').call()
+                    dockerdeploy('test','6232').call()
                 }
             }
         }
@@ -158,7 +158,7 @@ pipeline {
             steps {
                 script {
                     imageValidation().call()
-                    dockerdeploy('stage','5332').call()
+                    dockerdeploy('stage','7232').call()
                 }
             }
         }
@@ -183,7 +183,7 @@ pipeline {
                         submitter: 'suresh'
                 }
                 script {
-                    dockerdeploy('prod', '6332').call()
+                    dockerdeploy('prod', '8232').call()
                 }
             }
         }                        
@@ -256,7 +256,7 @@ def dockerdeploy(envDeploy,envPort) {
 }
 
 // Container port will be 8232 only, only host port changes
-// dev: HostPort = 3323
-// tst: HostPort = 4232
-// stg: HostPort = 6232
-// prod: HostPort = 5232
+// dev: HostPort = 5232
+// tst: HostPort = 6232
+// stg: HostPort = 7232
+// prod: HostPort = 8232
