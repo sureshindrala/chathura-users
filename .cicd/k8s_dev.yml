@@ -1,0 +1,33 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: chathura-eureka-dev
+  labels:
+    app: chathura-eureka-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chathura-eureka-dev
+  template:
+    metadata:
+      labels:
+        app: chathura-eureka-dev
+    spec:
+     containers:
+     - name: chathura-eureka-dev
+       image: DIT
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chathura-eureka-dev 
+  labels:
+    app: chathura-eureka-dev
+spec:
+ type: NodePort
+ ports:
+ - port: 8761
+   targetPort: 8761
+ selector:
+  app: chathura-eureka-dev
