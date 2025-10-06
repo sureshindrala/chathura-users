@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.learner</groupId>
-    <artifactId>chathura-product</artifactId>
+   <artifactId>chathura-user</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>chathura-product</name>
-    <description>git remote add origin https://github.com/Skandh15/learner-product-api.git</description>
+    <name>chathura-user</name>
+    <description>A microservice for User management</description>
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2022.0.1</spring-cloud.version>
