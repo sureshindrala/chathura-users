@@ -1,6 +1,4 @@
-@Library("com.chathura.slb@main") _ 
-dockerPipeline (
-    appName: 'user',
-    devHostPort: '5232',
-    contPort: '8232'
-)
+ @Library("com.chathura.slb@main") _ 
+ k8sPipeline (
+    appName: 'user'
+ )
