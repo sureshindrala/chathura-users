@@ -25,7 +25,7 @@ metadata:
   labels:
     app: chathura-user-dev
 spec:
- type: NodePort
+ #type: NodePort
  ports:
  - port: 8232
    targetPort: 8232
