@@ -1,25 +1,16 @@
-# Instructions
-
-# This is the official image as a base
-FROM openjdk:18
-
-# Create a directory called /opt/i27  in which we store our artifacts or other read only data.
+# This is offical image
+FROM eclipse-temurin:17-jre 
+# Creat a folder for jar file
 RUN mkdir -p /opt/chathura/
-
-# Setting the working directory to /opt/i27
+# Make work dir 
 WORKDIR /opt/chathura/
-
-# Define a build time variable called JAR_SOURCE to specify the path format
+# create an argument to retrieve JAR
 ARG JAR_SOURCE
-
-COPY ["${JAR_SOURCE}", "/opt/chathura/chathura-users.jar"]
-
-# Grant permissions to the Workdir 
+# copy Jar src to dest
+COPY ["${JAR_SOURCE}", "/opt/chathura/"]
+# change permission of folder
 RUN chmod 777 /opt/chathura/
-
-
-# Expose port 8761 to allow access to application
+# expose port number
 EXPOSE 8232
-
-# Run the process in the background 
-CMD ["java", "-jar", "/opt/chathura/chathura-users.jar"]
+# command for run java
+CMD ["java" , "-jar" , "/opt/chathura/i27-eureka-0.0.1-SNAPSHOT.jar"]
