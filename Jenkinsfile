@@ -133,7 +133,7 @@ pipeline {
                 // )]) {
                     script {
                         imageValidation().call()
-                        dockerdeploy('dev', '5761').call()
+                        dockerdeploy('dev', '5232').call()
                         
                         // try {
                         //     // Stop existing container
@@ -165,7 +165,7 @@ pipeline {
             steps {
                 script{
                     imageValidation().call()
-                    dockerdeploy('tst', '6761').call()
+                    dockerdeploy('tst', '6232').call()
                     }
                 }
             }
@@ -186,7 +186,7 @@ pipeline {
             steps {
                 script {   
                     imageValidation().call()
-                    dockerdeploy('stage', '7761').call()
+                    dockerdeploy('stage', '7232').call()
                 }
             }
         }
@@ -214,7 +214,7 @@ pipeline {
                 }
                 script {
                     imageValidation().call()
-                    dockerdeploy('prod', '8761').call()
+                    dockerdeploy('prod', '8232').call()
                 }                
             }
         }                
@@ -296,8 +296,8 @@ def dockerdeploy(envDeploy,envPort) {
     }
 }
 
-// Container port will be 8761 only, only host port changes
-// dev: HostPort = 5761
-// tst: HostPort = 6761
-// stg: HostPort = 7761
-// prod: HostPort = 8761
+// Container port will be 8232 only, only host port changes
+// dev: HostPort = 5232
+// tst: HostPort = 6232
+// stg: HostPort = 7232
+// prod: HostPort = 8232
