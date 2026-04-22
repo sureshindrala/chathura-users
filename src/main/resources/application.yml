@@ -46,6 +46,6 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://136.113.90.1:3306/
+      defaultZone: http://35.224.229.170:8761//
   instance:
     preferIpAddress: true
