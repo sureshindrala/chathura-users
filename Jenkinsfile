@@ -3,7 +3,7 @@ pipeline {
         label 'k8s-slave'
     }
     tools {
-        maven 'Maven-3.9.11'
+        maven 'Maven-3.9.14'
         jdk 'JDK-17'
     }
     parameters {
