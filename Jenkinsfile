@@ -5,7 +5,7 @@ pipeline {
     tools {
         maven 'Maven-3.9.14'
         jdk 'JDK-17'
-   }
+    }
     parameters {
         choice (name: 'scanOnly',
                 choices: 'no\nyes',
@@ -36,10 +36,11 @@ pipeline {
         POM_PACKAGING = readMavenPom().getPackaging()
         DOCKER_HUB = "docker.io/sureshindrala"
         DOCKER_CREDS = credentials('docker_creds')
-        DOCKER_SERVER= "35.224.229.170"   
+        DOCKER_SERVER= "35.224.229.170" 
+
     }
-    stages {
-        stage('************build-stage************************') {
+    stages{
+        stage('Build'){
             when {
                 anyOf {
                     expression {
@@ -47,181 +48,147 @@ pipeline {
                         params.buildOnly == 'yes'
                     }
                 }
-            }            
+            }
             steps {
-
-                echo "*****Building-${env.APPLICATION_NAME}******************"           
-            sh "mvn clean package -DskipTests=true"
-            // sh "mvn clean package -Dmaven.test.skip=truevv"
+                echo "*********************Build ${env.APPLICATION_NAME}*************************"
+                sh 'mvn clean package -DskipTest=true'
                 archive 'target/*.jar'
             }
 
-            }
-        stage('***********************sonar-stage*******************'){
-            when {
-                expression {
-                    params.dockerPush == 'yes'
-                    params.buildOnly == 'yes'                    
-                    params.scanOnly == 'yes'
-                }
-            }
-            steps {
-            echo "*******${env.APPLICATION_NAME}-sonar scaning*************"
-            withCredentials([string(credentialsId: 'sonar_creds', variable: 'sonar_creds')]){
-                sh """
-                    mvn clean verify sonar:sonar \
-                    -Dsonar.projectKey=chathura-eureka \
-                    -Dsonar.host.url=$SONAR_HOST \
-                    -Dsonar.login=$sonar_creds        
-
-                """
-            }
-
-            }
-
         }
-        stage('Build Format') {
+        stage('sonarqube'){
             when {
-                expression {
-                    params.dockerPush == 'yes'
-                    // params.buildOnly == 'yes'                    
-                    // params.scanOnly == 'yes'
+                anyOf{
+                    expression{
+                        params.dockerPush == 'yes'
+                        params.scanOnly == 'yes'
+                    }
                 }
             }
             steps {
-                    echo "***************************Printing Build Format*****************************"
-                    script {
-                        dockerBuildandPush().call()
-                    }
-                    // script {
-                    //     sh """
-                    //     echo "Testing JAR SOURCE: i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING}"
-                    //     echo "Testing JAR Destination Format: i27-${env.APPLICATION_NAME}-${currentBuild.number}-${BRANCH_NAME}.${env.POM_PACKAGING}"
-                    
-                    //     """
-                    //     sh "cp ${workspace}/target/i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} ./.cicd"
-                    //     sh "ls -la ./.cicd"
-                    //     sh "docker build --force-rm --no-cache --pull --rm=true --build-arg JAR_SOURCE=i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT} ./.cicd "
-                        
-                    //     echo "****************** Login to Docker Registry ******************"
+                echo "***************Build ${env.APPLICATION_NAME}-Sonar***************************"
+                withCredentials([string(credentialsId: 'sonar_creds', variable: 'sonar_creds')]) {
+                    sh """
+                        mvn sonar:sonar \
+                          -Dsonar.projectKey=chathura-user \
+                          -Dsonar.host.url=$SONAR_HOST \
+                          -Dsonar.login=$sonar_creds
+                    """
 
-                    //     sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}"
-                    //     echo "****************** Push Image to Docker Registry ******************"
-                    //     sh "docker push ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"                
-                    
-                    // }
-                }
+                }        
             }
-            // stage ('************docker-build and push************************') {
-            //     steps{
-            //         script{
-            //             dockerBuildandPush().call()
-            //         }
-            //     }
-            // }
-        stage('Deploy to Dev') {
-            when {
-                expression {
-                    params.deployToDev == 'yes'
-                }
-            }
-            steps {
-                // withCredentials([usernamePassword(
-                //     credentialsId: 'greesh_creds',
-                //     usernameVariable: 'USERNAME',
-                //     passwordVariable: 'PASSWORD'
-                // )]) {
-                    script {
-                        imageValidation().call()
-                        dockerdeploy('dev', '5232').call()
+ 
+        }
+        // stage ('Build Format') {
+        //         steps {
+        //             echo "***************************Printing Build Format*****************************"
+        //             script {
+        //                 sh """
+        //                 echo "Testing JAR SOURCE: chathura-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING}"
                         
-                        // try {
-                        //     // Stop existing container
-                        //     sh """
-                        //     sshpass -p '${PASSWORD}' ssh -o StrictHostKeyChecking=no ${USERNAME}@${env.DOCKER_SERVER} "docker stop ${env.APPLICATION_NAME} || true"
-                        //     sshpass -p '${PASSWORD}' ssh -o StrictHostKeyChecking=no ${USERNAME}@${env.DOCKER_SERVER} "docker rm ${env.APPLICATION_NAME} || true"
-                        //     """
+                        
 
-                        //     // Run new container
-                        //     sh """
-                        //     sshpass -p '${PASSWORD}' ssh -o StrictHostKeyChecking=no ${USERNAME}@${env.DOCKER_SERVER} "docker container run -dit -p 8761:8761 --name ${env.APPLICATION_NAME} ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
-                        //     sshpass -p '${PASSWORD}' ssh -o StrictHostKeyChecking=no ${USERNAME}@${env.DOCKER_SERVER} "docker ps"
-                        //     """
-                        // } catch (err) {
-                        //     echo "Error caught: ${err}"
-                        // }
-                        // // sh """
-                        // //     sshpass -p '${PASSWORD}' ssh -o StrictHostKeyChecking=no ${USERNAME}@${env.DOCKER_SERVER} "docker container run -dit -p 8761:8761 --name ${env.APPLICATION_NAME} ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
-                        // // """
-                    }
-                }
-            }
-        stage('Deploy to Test'){
+        //                 """
+        //                 // sh "cp ${workspace}/target/i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} ./.cicd"
+        //                 // sh "ls -la ./.cicd"
+        //                 // sh "docker build --force-rm --no-cache --pull --rm=true --build-arg JAR_SOURCE=i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT} ./.cicd "
+        //             }
+        //         }
+        //     }
+        stage ('docker build and push') {
             when {
-                expression {
-                    params.deployToTest == 'yes'
-                }
-            }
-            steps {
-                script{
-                    imageValidation().call()
-                    dockerdeploy('tst', '6232').call()
-                    }
-                }
-            }
-        stage('Deploy to stage'){
-            when {
-                allOf {
                 anyOf {
                     expression {
-                        params.deployToStage == 'yes'
+                        params.dockerBuildandPush == 'yes'
+                        
                     }
                 }
-                anyOf {
-                    branch 'release/*'
-                    tag pattern: "v\\d{1,2}\\.\\d{1,2}\\.\\d{1,2}", comparator: "REGEXP" // v1.2.3 is the correct one, v123 is the wrong one
-                }
             }
-            }
-            steps {
-                script {   
-                    imageValidation().call()
-                    dockerdeploy('stage', '7232').call()
+            steps{
+                script{
+                    dockerBuildandPush().call()
                 }
             }
         }
-        stage('Deploy to prod'){
-            // when {
-            //     expression {
-            //         params.deployToProd == 'yes'
-            //     }
-            // }
+        stage('docker deploy-dev') {
             when {
-                allOf {
-                    anyOf {
-                        expression {
-                            params.deployToProd == 'yes'
+                anyOf {
+                    expression {
+                        params.deployToDev == 'yes'
+                    }
+                }
+            }
+            steps {
+                script {
+                    imageValidation().call()
+                    dockerdeploy('dev','5232').call()
+                }
+            }
+        }
+        stage('docker deploy-test') {
+            when {
+                anyOf{
+                    expression{
+                        params.deployToTest == 'yes'
+                    }
+                }
+            }
+            steps {
+                script {
+                    imageValidation().call()
+                    dockerdeploy('test','6232').call()
+                }
+            }
+        }
+        stage('docker deploy-stage') {
+            when {
+                allOf{
+                   anyOf{
+                     expression{
+                            params.deployToStage == 'yes'
                         }
                     }
                     anyOf {
-                        tag pattern: "v\\d{1,2}\\.\\d{1,2}\\.\\d{1,2}", comparator: "REGEXP" // v1.2.3 is the correct one, v123 is the wrong one
-                    }
+                        branch 'release/*'
+                        tag pattern: "v\\d{1,2}\\.\\d{1,2}\\.\\d{1,2}\\", comparator: "REGEXP"
+                    }  
                 }
+
             }
             steps {
-                timeout(time: 300, unit: 'SECONDS'){ // SECONDS, MINUTES, HOURs
-                     input message: "Deploying to ${env.APPLICATION_NAME} to production ??", ok:'yes', submitter: 'Suresh Indrala'
-                }
                 script {
                     imageValidation().call()
-                    dockerdeploy('prod', '8232').call()
-                }                
+                    dockerdeploy('stage','7232').call()
+                }
             }
-        }                
-    }                        
-        
-}
+        }
+        stage('docker deploy-prod') {
+            when {
+                allOf{
+                   anyOf{
+                        expression{
+                            params.deployToProd == 'yes'
+                    }
+                }
+                    anyOf {
+                        tag pattern: "v\\d{1,2}\\.\\d{1,2}\\.\\d{1,2}", comparator: "REGEXP" // v1.2.3 is the correct one, v123 is the wrong one
+                    }                
+                }
 
+            }
+            steps {
+                timeout(time: 300, unit: 'SECONDS') { // SECONDS, MINUTES, HOURS//
+                    input message: "Deploying ${env.APPLICATION_NAME} to production ??", 
+                        ok: 'Yes', 
+                        submitter: 'suresh'
+                }
+                script {
+                    dockerdeploy('prod', '8232').call()
+                }
+            }
+        }                        
+    }
+}
 
 def buildApp(){
     return {
@@ -250,31 +217,23 @@ def imageValidation() {
 
 def dockerBuildandPush() {
     return {
-        script {
-            sh """
-            echo "Testing JAR SOURCE: i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING}"
-            echo "Testing JAR Destination Format: i27-${env.APPLICATION_NAME}-${currentBuild.number}-${BRANCH_NAME}.${env.POM_PACKAGING}"
-        
-            """
-            sh "cp ${workspace}/target/i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} ./.cicd"
-            sh "ls -la ./.cicd"
-            sh "docker build --force-rm --no-cache --pull --rm=true --build-arg JAR_SOURCE=i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT} ./.cicd "
-            
-            echo "****************** Login to Docker Registry ******************"
+        echo "*****************building Docker image***********************"
+        sh """
+            cp ${workspace}/target/chathura-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} ./.cicd
+            ls -la ./.cicd
+            docker build --force-rm --no-cache --pull --rm=true --build-arg JAR_SOURCE=chathura-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}  ./.cicd
+            echo "***********Docker login***********************"
+            docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW} 
+            docker push ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}
 
-            sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}"
-            echo "****************** Push Image to Docker Registry ******************"
-            sh "docker push ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"                
-        
-        }   
 
-               
+        """        
     }
 }
 
 def dockerdeploy(envDeploy,envPort) {
     return{
-    withCredentials([usernamePassword(credentialsId: 'greesh_creds', 
+    withCredentials([usernamePassword(credentialsId: 'docker_vm_creds', 
         passwordVariable: 'PASSWORD', 
         usernameVariable: 'USERNAME')]) {
         try {
@@ -286,7 +245,7 @@ def dockerdeploy(envDeploy,envPort) {
 
             // Run new container
             sh """
-            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"${env.DOCKER_SERVER}" "docker container run -dit -p ${envPort}:8761 --name ${env.APPLICATION_NAME}-${envDeploy} ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
+            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"${env.DOCKER_SERVER}" "docker container run -dit -p ${envPort}:8232 --name ${env.APPLICATION_NAME}-${envDeploy} ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
             sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"${env.DOCKER_SERVER}" "docker ps"
             """
         } catch (err) {
