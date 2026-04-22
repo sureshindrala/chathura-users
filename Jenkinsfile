@@ -233,7 +233,7 @@ def dockerBuildandPush() {
 
 def dockerdeploy(envDeploy,envPort) {
     return{
-    withCredentials([usernamePassword(credentialsId: 'docker_creds', 
+    withCredentials([usernamePassword(credentialsId: 'greesh_creds', 
         passwordVariable: 'PASSWORD', 
         usernameVariable: 'USERNAME')]) {
         try {
