@@ -13,4 +13,4 @@ RUN chmod 777 /opt/chathura/
 # expose port number
 EXPOSE 8232
 # command for run java
-CMD ["java" , "-jar" , "/opt/chathura/i27-users-0.0.1-SNAPSHOT.jar"]
+CMD ["java" , "-jar" , "/opt/chathura/i27-user-0.0.1-SNAPSHOT.jar"]
