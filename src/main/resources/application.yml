@@ -11,7 +11,7 @@ spring:
   datasource:
     #    password: Learner@2023
     #    url: jdbc:mysql://34.29.125.76:3306,34.68.236.8:3306/learnerCrownClothing?useSSL=FALSE
-    password: Greesh@1023
+    password: root
     url: jdbc:mysql://localhost:3306/product_managment?useSSL=FALSE
     username: root
   jpa:
@@ -46,6 +46,6 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://35.224.229.170:8761/
+      defaultZone: http://35.224.229.170:8761
   instance:
     preferIpAddress: true
