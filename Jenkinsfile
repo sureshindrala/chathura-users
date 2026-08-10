@@ -29,6 +29,7 @@ pipeline {
         choices: 'no\nyes',
     )                                            
 }
+
     environment {
         APPLICATION_NAME = "user"
         SONAR_HOST = "http://35.196.58.210:9000"
@@ -161,7 +162,7 @@ pipeline {
             steps {
                 script {
                     imageValidation().call()
-                    dockerdeploy('dev','5761').call()
+                    dockerdeploy('dev','5232').call()
                 }
             }
         }
