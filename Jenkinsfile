@@ -30,7 +30,7 @@ pipeline {
     )                                            
 }
     environment {
-        APPLICATION_NAME = "users"
+        APPLICATION_NAME = "user"
         SONAR_HOST = "http://35.196.58.210:9000"
         POM_VERSION = readMavenPom().getVersion()
         POM_PACKAGING = readMavenPom().getPackaging()
