@@ -33,7 +33,7 @@ spring:
       on-profile: dev
   datasource:
     password: Greesh@1023
-    url: jdbc:mysql://34.70.206.79:3306/learnerCrownClothing?useSSL=true
+    url: jdbc:mysql://136.119.20.160:3306/learnerCrownClothing?useSSL=true
     username: db_user
   jpa:
     hibernate:
@@ -46,6 +46,6 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://35.224.229.170:8761
+      defaultZone: http://136.119.45.10:5761/
   instance:
     preferIpAddress: true
